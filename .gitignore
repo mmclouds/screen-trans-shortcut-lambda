@@ -2,7 +2,7 @@
 node_modules/
 
 # Build
-.aws-sam/
+.aws-sam
 sharp-layer.zip
 
 # IDE

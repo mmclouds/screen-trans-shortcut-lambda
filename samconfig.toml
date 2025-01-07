@@ -1,0 +1,16 @@
+version = 0.1
+[default]
+[default.global.parameters]
+no_telemetry = true
+
+[default.deploy]
+[default.deploy.parameters]
+stack_name = "screen-translate"
+region = "ap-northeast-1"
+confirm_changeset = false
+capabilities = "CAPABILITY_IAM CAPABILITY_NAMED_IAM"
+s3_bucket = "screen-trans-b"
+parameter_overrides = "TargetLanguage=\"zh\""
+resolve_s3 = true
+s3_prefix = "screen-translate"
+image_repositories = []

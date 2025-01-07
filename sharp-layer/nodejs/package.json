@@ -1,0 +1,16 @@
+{
+  "name": "nodejs",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "install": "npm install --platform=linux --arch=x64 --no-optional sharp"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "Sharp image processing library for AWS Lambda",
+  "dependencies": {
+    "sharp": "^0.33.5"
+  }
+}

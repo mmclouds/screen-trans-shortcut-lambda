@@ -1,0 +1,9 @@
+{
+  "httpMethod": "POST",
+  "path": "/",
+  "headers": {
+    "x-api-key": "test-api-key",
+    "Content-Type": "application/json"
+  },
+  "body": "{\"message\":\"data:image/jpeg;base64,/9j/4AAQSkZJRg==\",\"password\":\"1\"}"
+} 

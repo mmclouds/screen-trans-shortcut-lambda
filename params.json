@@ -1,0 +1,8 @@
+{
+  "Parameters": {
+    "ApiPassword": "your-actual-password",
+    "TargetLanguage": "zh",
+    "VolcAccessKey": "your-actual-volc-access-key",
+    "VolcSecretKey": "your-actual-volc-secret-key"
+  }
+} 
