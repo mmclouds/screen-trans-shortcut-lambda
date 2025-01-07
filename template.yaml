@@ -15,6 +15,9 @@ Parameters:
   VolcSecretKey:
     Type: String
     NoEcho: true
+  CertificateArn:
+    Type: String
+    Description: ARN of the SSL certificate in AWS Certificate Manager
 
 Resources:
   screentranslateFunction:
@@ -40,7 +43,18 @@ Resources:
             Method: ANY
             Auth:
               ApiKeyRequired: true
+            RestApiId: !Ref ApiGatewayApi
     Metadata:
       Dockerfile: Dockerfile
       DockerContext: .
       DockerTag: latest
+
+  ApiGatewayApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: Prod
+      Domain:
+        DomainName: trans.mmclouds.org
+        CertificateArn: !Ref CertificateArn
+        EndpointConfiguration: REGIONAL
+        SecurityPolicy: TLS_1_2
