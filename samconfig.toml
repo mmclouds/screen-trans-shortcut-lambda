@@ -13,4 +13,4 @@ s3_bucket = "screen-trans-b"
 parameter_overrides = "TargetLanguage=\"zh\""
 resolve_s3 = true
 s3_prefix = "screen-translate"
-image_repositories = []
+image_repositories = ["screentranslateFunction=872515255237.dkr.ecr.ap-northeast-1.amazonaws.com/screentranslate9b818dea/screentranslatefunctiona42c94cerepo"]

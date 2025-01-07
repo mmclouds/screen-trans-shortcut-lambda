@@ -6,6 +6,7 @@
   "main": "index.mjs",
   "dependencies": {
     "axios": "^1.3.4",
+    "sharp": "^0.32.6",
     "volcengine-sdk": "^0.0.2"
   }
 }

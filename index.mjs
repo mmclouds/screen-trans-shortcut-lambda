@@ -1,6 +1,5 @@
 import sharp from 'sharp';
 import axios from 'axios';
-const VolcEngineSDK = require("volcengine-sdk");
 
 async function compressImage(base64String, quality) {
     const inputBuffer = Buffer.from(base64String, 'base64');
@@ -29,6 +28,10 @@ export const handler = async (event, context) => {
     console.log('Context:', JSON.stringify(context, null, 2));
     
     try {
+        // 动态导入volcengine-sdk
+        const VolcEngineSDK = await import('volcengine-sdk');
+        const { ApiInfo, ServiceInfo, Credentials, Request } = VolcEngineSDK.default;
+        
         // 解析请求体
         const requestBody = JSON.parse(event.body);
         const { message, password } = requestBody;
@@ -44,7 +47,6 @@ export const handler = async (event, context) => {
             };
         }
 
-        const { ApiInfo, ServiceInfo, Credentials, API, Request } = VolcEngineSDK;
         const compressedImage = await compressImage(message, 70);
 
         const requestParams = new Request.Body({
@@ -75,7 +77,7 @@ export const handler = async (event, context) => {
         );
         
         const apiInfo = new ApiInfo('POST', '/', query, requestParams);
-        const api = API(serviceInfo, apiInfo);
+        const api = VolcEngineSDK.default.API(serviceInfo, apiInfo);
         const axiosResponse = await axios.post(api.url, api.params, api.config);
 
         const resImage = `data:image/jpeg;base64,${axiosResponse.data.Image}`;
