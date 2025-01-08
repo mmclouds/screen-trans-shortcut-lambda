@@ -17,7 +17,18 @@ Parameters:
     NoEcho: true
   CertificateArn:
     Type: String
-    Description: ARN of the SSL certificate in AWS Certificate Manager
+    Description: 'ACM certificate ARN for the domain'
+    Default: 'arn:aws:acm:ap-northeast-1:872515255237:certificate/3ef9837d-cfbe-462f-bd19-4925bf095508'
+
+Globals:
+  Api:
+    EndpointConfiguration: REGIONAL
+    Auth:
+      ApiKeyRequired: true
+    Cors:
+      AllowMethods: "'POST, OPTIONS'"
+      AllowHeaders: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
+      AllowOrigin: "'https://trans.mmclouds.org'"
 
 Resources:
   screentranslateFunction:
@@ -40,21 +51,76 @@ Resources:
           Type: Api
           Properties:
             Path: /
-            Method: ANY
+            Method: POST
+            RestApiId: !Ref ApiGatewayApi
             Auth:
               ApiKeyRequired: true
-            RestApiId: !Ref ApiGatewayApi
     Metadata:
-      Dockerfile: Dockerfile
-      DockerContext: .
+      BuildMethod: esbuild
       DockerTag: latest
+      DockerContext: .
+      Dockerfile: Dockerfile
 
   ApiGatewayApi:
     Type: AWS::Serverless::Api
     Properties:
       StageName: Prod
+      EndpointConfiguration: 
+        Type: REGIONAL
       Domain:
         DomainName: trans.mmclouds.org
         CertificateArn: !Ref CertificateArn
         EndpointConfiguration: REGIONAL
         SecurityPolicy: TLS_1_2
+      Auth:
+        ApiKeyRequired: true
+      Cors:
+        AllowMethods: "'POST, OPTIONS'"
+        AllowHeaders: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
+        AllowOrigin: "'https://trans.mmclouds.org'"
+
+  ApiKey:
+    Type: AWS::ApiGateway::ApiKey
+    DependsOn: 
+      - ApiGatewayApiProdStage
+    Properties:
+      Enabled: true
+      StageKeys:
+        - RestApiId: !Ref ApiGatewayApi
+          StageName: Prod
+
+  UsagePlan:
+    Type: AWS::ApiGateway::UsagePlan
+    DependsOn: 
+      - ApiGatewayApiProdStage
+      - ApiKey
+    Properties:
+      ApiStages:
+        - ApiId: !Ref ApiGatewayApi
+          Stage: Prod
+      Description: Basic usage plan
+      Quota:
+        Limit: 1000
+        Period: MONTH
+      Throttle:
+        BurstLimit: 10
+        RateLimit: 5
+
+  UsagePlanKey:
+    Type: AWS::ApiGateway::UsagePlanKey
+    DependsOn: UsagePlan
+    Properties:
+      KeyId: !Ref ApiKey
+      KeyType: API_KEY
+      UsagePlanId: !Ref UsagePlan
+
+Outputs:
+  ApiEndpoint:
+    Description: API Gateway endpoint URL
+    Value: !Sub https://${ApiGatewayApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/
+  CustomDomainEndpoint:
+    Description: Custom domain endpoint URL
+    Value: https://trans.mmclouds.org
+  ApiKeyId:
+    Description: API Key ID
+    Value: !Ref ApiKey
